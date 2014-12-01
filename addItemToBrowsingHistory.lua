@@ -48,4 +48,4 @@ if balance > 0 then
     end
 end
 
-return balance;
+return 0;
