@@ -16,7 +16,7 @@ $redis->connect('127.0.0.1', '6379');
 // echo $redis->get('test');
 
 $luaScript = file_get_contents('./addItemToBrowsingHistory.lua');
-$ret = $redis->eval($luaScript, array(4028, 'brand_browsing_10010', 1417498107, 'brand_expired_10010', 1417498107, 1417498107, 3, 1417457308));
+$ret = $redis->eval($luaScript, array(4015, 'brand_browsing_10011', 1417482942, 'brand_expired_10011', 1417482942, 1417582942, 1417482943));
 var_export($ret);
 
 $err = $redis->getLastError(); 

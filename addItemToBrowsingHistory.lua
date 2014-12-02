@@ -14,21 +14,21 @@ local num;
 local tProductId;
 local index;
 
-redis.call('zAdd', browsingKey, browsingTime, productId);
-redis.call('expire', browsingKey, delTime);
+redis.call('ZADD', browsingKey, browsingTime, productId);
+redis.call('EXPIRE', browsingKey, delTime);
 
-redis.call('zAdd', expiredKey, expiredTime, productId);
-redis.call('expire', expiredKey, delTime);
+redis.call('ZADD', expiredKey, expiredTime, productId);
+redis.call('EXPIRE', expiredKey, delTime);
 
 local count = redis.call('ZCARD', expiredKey);
 local balance = count - maxHistoryLength;
 if balance > 0 then
     -- 获取过期列表
     -- NMB by score
-    local expiredList = redis.call('zRangeByScore', expiredKey, 0, now);
+    local expiredList = redis.call('ZRANGEBYSCORE', expiredKey, 0, now);
     if expiredList ~= false and #expiredList ~= 0 then
         -- 有商品过期 删除
-        num = redis.call('zDeleteRangeByScore', expiredKey, 0, now);
+        num = redis.call('ZREMRANGEBYSCORE', expiredKey, 0, now);
         balance = balance - num;
         for tProductId in ipairs(expiredList) do
             redis.call('ZREM', browsingKey, tProductId);
@@ -38,8 +38,8 @@ if balance > 0 then
     if balance > 0 then
         -- 否则判断浏览历史列表
         -- 删了浏览历史最后一下
-        local expiredList2 = redis.call('zRange', browsingKey, 0, balance - 1);
-        num = redis.call('zRemRangeByRank', browsingKey, 0, balance - 1);
+        local expiredList2 = redis.call('ZRANGE', browsingKey, 0, balance - 1);
+        num = redis.call('ZREMRANGEBYRANK', browsingKey, 0, balance - 1);
 
         -- NMB by index
         for index=1, #expiredList2 do
